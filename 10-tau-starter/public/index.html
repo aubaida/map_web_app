@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TAU Mobile Map Starter</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+  <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
+  <script defer src="https://code.getmdl.io/1.2.0/material.min.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div id='map'></div>
+  <button id="add-pin-button" onclick="addPin()" class="mdc-fab" aria-label="Favorite">
+    <div class="mdc-fab__ripple"></div>
+    <span class="mdc-fab__icon material-icons">add</span>
+  </button>
+  <dialog class="mdl-dialog">
+      <h4 class="mdl-dialog__title">New marker</h4>
+      <div class="mdl-dialog__content">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input class="mdl-textfield__input" type="text" id="type">
+          <label class="mdl-textfield__label" for="type">Type</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input class="mdl-textfield__input" type="text" id="description">
+          <label class="mdl-textfield__label" for="description">Description</label>
+        </div>
+      </div>
+      <div class="mdl-dialog__actions">
+        <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored mdl-shadow--2dp" id="dialog-rate_save">Save</button>
+        <button type="button" class="mdl-button close">Close</button>
+      </div>
+  </dialog>
+  <script src="app.js"></script>
+  <script>
+    var myGeoJSON = {"type": "FeatureCollection", "features": [{"type": "Feature", "id": "d90d942c-d400-4dc3-88ef-68d191f11f40", "geometry": {"type": "Point", "coordinates": [34.79919379, 32.10020564]}, "properties": {"name": ""}}, {"type": "Feature", "id": "ab723264-1c2c-41af-bd74-e584769d3f29", "geometry": {"type": "Point", "coordinates": [34.79919379, 32.10020564]}, "properties": {"name": ""}}, {"type": "Feature", "id": "c303b1e6-4233-4850-9612-814c47759525", "geometry": {"type": "Point", "coordinates": [34.79919379, 32.10020564]}, "properties": {"name": ""}}, {"type": "Feature", "id": "9cbb3936-2c33-4d00-99f3-13a1692950c2", "geometry": {"type": "Point", "coordinates": [34.79919379, 32.10020564]}, "properties": {"name": ""}}, {"type": "Feature", "id": "3d67a3c0-ba80-4f10-ab97-e837e7f88021", "geometry": {"type": "Point", "coordinates": [34.78771177, 32.09764888]}, "properties": {"name": ""}}, {"type": "Feature", "id": "6c751512-0e7f-4e4d-8bfa-d189ff4fff3e", "geometry": {"type": "Point", "coordinates": [34.77908384, 32.0969541]}, "properties": {"name": ""}}, {"type": "Feature", "id": "c9ce4b37-c291-425d-9c94-d4362f4c49bd", "geometry": {"type": "LineString", "coordinates": [[34.79919379, 32.10020564], [34.79623202, 32.09954613], [34.7948303, 32.09923401], [34.78771177, 32.09764888], [34.77908384, 32.0969541]]}, "properties": {"name": "biking trip A"}}]}
+    L.geoJSON(myGeoJSON).addTo(map)
+  </script>
+</body>
+</html>
