@@ -26,3 +26,33 @@ html, body {
 }
 
 body { padding: 0; margin: 0; } #map { height: 100%; width: 100vw; }
+
+button{
+  position: relative;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+#close-image img {
+  width: 100%;
+  height: auto;
+
+}
+pio{
+     font-size: 125%;
+     font-weight: bold;
+     color: #181615;
+   }
+
+.example-1 {
+  
+  /* Adds a white border around the button, along with a blue glow. The white and blue have a color contrast ratio of at least 3:1, which means this will work against any background color. */
+  box-shadow: 0 0 0 2px #ffffff, 0 0 3px 5px #3a97f9;
+  
+  /* NOTE: box-shadow is invisible in Windows high-contrast mode, so we need to add a transparent outline, which actually does show up in high-contrast mode. */
+  outline: 2px dotted transparent;
+  outline-offset: 2px;
+}
+

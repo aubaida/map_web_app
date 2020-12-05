@@ -51,17 +51,33 @@ map.on('mousedown touchstart', function onMouseDown(event) {
   if (pinInPlacement) {
     currentPinCoords = event.latlng;
     pinInPlacement = false;
-
     dialog.showModal();
+     const pinButton = document.getElementById('add-pin-button');
+    pinButton.classList='mdc-fab';
   }
 });
-
+//bottom-change class
+function updateClass(){
+  const element =document.getElementById('close-image');
+   console.log(element.getAttribute('ispressed'));
+  if(element.getAttribute('ispressed')==='false'){
+     element.setAttribute('ispressed',true);
+    element.classList.add('example-1');
+  }else{
+    element.setAttribute('ispressed',false);
+    element.classList='';
+  }
+}
 // Bottom-right button press event
 function addPin() {
-  pinInPlacement = true;
+  pinInPlacement = !pinInPlacement;
 
   const pinButton = document.getElementById('add-pin-button');
+  if(pinInPlacement==true){
   pinButton.classList.add('add-pin-button--active');
+  }else{
+    pinButton.classList='mdc-fab';
+  }
 }
 
 // Register dialog

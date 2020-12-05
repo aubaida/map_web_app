@@ -25,14 +25,17 @@
   <dialog class="mdl-dialog">
       <h4 class="mdl-dialog__title">New marker</h4>
       <div class="mdl-dialog__content">
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <input class="mdl-textfield__input" type="text" id="type">
-          <label class="mdl-textfield__label" for="type">Type</label>
-        </div>
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <pio class="">Type :</pio>
+        <br>
+        <br>
+        <button id="close-image" style="margin-left:1em" ispressed=false class="" onclick="updateClass()"><img src="icons/bench.png"></button>
+        <button id="close-image" style="margin-left:1em" ispressed=false class="" onclick="updateClass()"><img src="icons/toilet.png"></button>
+        <button id="close-image" style="margin-left:1em" ispressed=false class="" onclick="updateClass()"><img src="icons/workout.png"></button>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
           <input class="mdl-textfield__input" type="text" id="description">
           <label class="mdl-textfield__label" for="description">Description</label>
         </div>
+        
       </div>
       <div class="mdl-dialog__actions">
         <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored mdl-shadow--2dp" id="dialog-rate_save">Save</button>
