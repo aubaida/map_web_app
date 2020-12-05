@@ -56,16 +56,29 @@ map.on('mousedown touchstart', function onMouseDown(event) {
     pinButton.classList='mdc-fab';
   }
 });
+
+var markerType=null;
+
+
 //bottom-change class
-function updateClass(){
-  const element =document.getElementById('close-image');
-   console.log(element.getAttribute('ispressed'));
+function updateClass(ele){
+  const element =ele;
+  var divs = document.querySelectorAll("[ispressed]");
+  for(var i =0; i<divs.length;i++){
+    if(divs[i]!==ele && divs[i].getAttribute('ispressed')==='true' ){
+      divs[i].setAttribute('ispressed',false);
+      divs[i].classList='';
+    }
+  }
+  console.log(element.getAttribute('ispressed'));
   if(element.getAttribute('ispressed')==='false'){
      element.setAttribute('ispressed',true);
     element.classList.add('example-1');
+    markerType=element.getAttribute('type');
   }else{
     element.setAttribute('ispressed',false);
     element.classList='';
+    markerType=null;
   }
 }
 // Bottom-right button press event
@@ -92,8 +105,8 @@ dialog.querySelector('#dialog-rate_save').addEventListener('click', function() {
 
   if (currentPinCoords) {
     L.marker(currentPinCoords).addTo(map);
-
-    const type = document.querySelector('#type').value;
+    console.log(markerType);
+    const type = markerType;
     const description = document.querySelector('#description').value;
     const id = getRandomId();
     const data = { type, description, coords: currentPinCoords };
@@ -111,6 +124,9 @@ dialog.querySelector('.close').addEventListener('click', function() {
   dialog.close();
   deactivateAddPinButton();
 });
+
+// add icon to map
+
 
 // Dialog helper method (i.e change button color)
 function deactivateAddPinButton() {
