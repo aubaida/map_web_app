@@ -59,8 +59,35 @@ map.on('mousedown touchstart', function onMouseDown(event) {
 
 var markerType=null;
 
+/*ICONS CONFIG*/
+var benchIcon = L.icon({
+    iconUrl: 'icons/bench.png',
+    iconSize:     [40, 40], // size of the icon
+    shadowSize:   [50, 64], // size of the shadow
+    //iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+var toiletIcon = L.icon({
+    iconUrl: 'icons/toilet.png',
+    iconSize:     [40, 40], // size of the icon
+    shadowSize:   [50, 64], // size of the shadow
+    //iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+var workoutIcon = L.icon({
+    iconUrl: 'icons/workout.png',
+    iconSize:     [40, 40], // size of the icon
+    shadowSize:   [50, 64], // size of the shadow
+    //iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
 
-//bottom-change class
+
+/*END ICONS CONFIG*/ 
+
+
+
+//button-change class
 function updateClass(ele){
   const element =ele;
   var divs = document.querySelectorAll("[ispressed]");
@@ -101,11 +128,20 @@ if (!dialog.showModal) {
 
 // Dialog save
 dialog.querySelector('#dialog-rate_save').addEventListener('click', function() {
+  if(markerType==null){
+    alert("please choose a Type to continue!");
+    return;
+  }
   dialog.close();
 
   if (currentPinCoords) {
-    L.marker(currentPinCoords).addTo(map);
-    console.log(markerType);
+    if(markerType=="bench"){
+      L.marker(currentPinCoords, {icon: benchIcon}).addTo(map);
+    }else if(markerType=="toilet"){
+     L.marker(currentPinCoords, {icon: toiletIcon}).addTo(map);
+    }else{ // workout
+      L.marker(currentPinCoords, {icon: workoutIcon}).addTo(map);
+    }
     const type = markerType;
     const description = document.querySelector('#description').value;
     const id = getRandomId();
@@ -114,6 +150,7 @@ dialog.querySelector('#dialog-rate_save').addEventListener('click', function() {
     fetch(`/add_point?id=${id}&data=${JSON.stringify(data)}`, {
       method: 'GET'
     });
+    clearPressedType();
   }
 
   deactivateAddPinButton();
@@ -123,7 +160,20 @@ dialog.querySelector('#dialog-rate_save').addEventListener('click', function() {
 dialog.querySelector('.close').addEventListener('click', function() {
   dialog.close();
   deactivateAddPinButton();
+  clearPressedType();
 });
+
+//cleans pressed button and markerType=null
+function clearPressedType(){
+    var divs = document.querySelectorAll("[ispressed]");
+    for(var i =0; i<divs.length;i++){
+      if(divs[i].getAttribute('ispressed')==='true' ){
+        divs[i].setAttribute('ispressed',false);
+        divs[i].classList='';
+      }
+  }
+  markerType=null;
+}
 
 // add icon to map
 
@@ -168,7 +218,7 @@ let pointLocation = null;
 	function onLocationFound(e) {
     if(locatedFlag==1){
       map.removeLayer(pointLocation);
-      map.removeLayer(radiusLocation);
+    //  map.removeLayer(radiusLocation);
     }
 		var radius = e.accuracy / 2;
     pointLocation =new L.marker(e.latlng);
@@ -176,8 +226,8 @@ let pointLocation = null;
         .on('dblclick', onDoubleClick)
         .bindPopup("You are here!")
         .openPopup();
-    radiusLocation = new L.circle(e.latlng, radius);
-    radiusLocation.addTo(map);
+ //   radiusLocation = new L.circle(e.latlng, radius);
+  //  radiusLocation.addTo(map);
     if(locatedFlag==0){
       stopLocation();
       locatedFlag = 1;
@@ -216,7 +266,14 @@ fetch('/all_points', { method: 'GET' })
     Object.keys(data).forEach(
       id => {
         const pointData = JSON.parse(data[id]);
-        L.marker(pointData.coords).addTo(map);
+        var pointType = pointData.type;
+        if(pointType=="bench"){
+          L.marker(pointData.coords, {icon: benchIcon}).addTo(map);
+        }else if(pointType=="toilet"){
+          L.marker(pointData.coords, {icon: toiletIcon}).addTo(map);
+        }else{ // workout
+          L.marker(pointData.coords, {icon: workoutIcon}).addTo(map);
+        }
       }
     );
   }
