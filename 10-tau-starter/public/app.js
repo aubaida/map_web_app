@@ -21,30 +21,6 @@ if (true) {
 let pinInPlacement = false;
 // Current pin coordinates, set by pressing the map
 let currentPinCoords = null;
-const ZOOM_TO_LOCATION = false;
-
-// Example code to show how to get GPS location and place pin on map in that location
-if (ZOOM_TO_LOCATION) {
-  function onLocationFound(e) {
-    let radius = e.accuracy  / 2 ;
-
-    L.marker(e.latlng)
-        .addTo(map)
-        .on('dblclick', onDoubleClick)
-        .bindPopup("You are within " + radius + " meters from this point")
-        .openPopup();
-
-    L.circle(e.latlng, radius).addTo(map);
-  }
-
-  function onLocationError(e) {
-    console.log(e.message);
-  }
-
-  map.on('locationfound', onLocationFound);
-  map.on('locationerror', onLocationError);
-  map.locate({setView: true, maxZoom: 16});
-}
 
 // Map press event
 map.on('mousedown touchstart', function onMouseDown(event) {
@@ -52,60 +28,82 @@ map.on('mousedown touchstart', function onMouseDown(event) {
     currentPinCoords = event.latlng;
     pinInPlacement = false;
     dialog.showModal();
-     const pinButton = document.getElementById('add-pin-button');
-    pinButton.classList='mdc-fab';
+    const pinButton = document.getElementById('add-pin-button');
+    pinButton.classList = 'mdc-fab';
   }
 });
 
-var markerType=null;
+var markerType = null;
 
 /*ICONS CONFIG*/
 var benchIcon = L.icon({
-    iconUrl: 'icons/bench.png',
-    iconSize:     [40, 40], // size of the icon
-    shadowSize:   [50, 64], // size of the shadow
-    //iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+  iconUrl: 'icons/bench-icon.png',
+  iconSize: [60, 60], // size of the icon
+  shadowSize: [50, 64], // size of the shadow
+  iconAnchor: [30, 52], // point of the icon which will correspond to marker's location
+  popupAnchor: [-2, -42] // point from which the popup should open relative to the iconAnchor
 });
 var toiletIcon = L.icon({
-    iconUrl: 'icons/toilet.png',
-    iconSize:     [40, 40], // size of the icon
-    shadowSize:   [50, 64], // size of the shadow
-    //iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+  iconUrl: 'icons/toilet-icon.png',
+  iconSize: [60, 60], // size of the icon
+  shadowSize: [50, 64], // size of the shadow
+  iconAnchor: [30, 52], // point of the icon which will correspond to marker's location
+  popupAnchor: [-2, -42] // point from which the popup should open relative to the iconAnchor
 });
 var workoutIcon = L.icon({
-    iconUrl: 'icons/workout.png',
-    iconSize:     [40, 40], // size of the icon
-    shadowSize:   [50, 64], // size of the shadow
-    //iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+  iconUrl: 'icons/workout-icon.png',
+  iconSize: [60, 60], // size of the icon
+  shadowSize: [50, 64], // size of the shadow
+  iconAnchor: [30, 52], // point of the icon which will correspond to marker's location
+  popupAnchor: [-2, -42] // point from which the popup should open relative to the iconAnchor
 });
 
 
-/*END ICONS CONFIG*/ 
+/*END ICONS CONFIG*/
 
+/*sending image*/
+const handleImageUpload = event => {
+  const files = event.target.files
+  const formData = new FormData()
+  formData.append('myFile', files[0])
 
+  fetch('/add_img', {
+    method: 'POST',
+    body: formData
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data.path)
+    })
+    .catch(error => {
+      console.error(error)
+    })
+}
+
+document.querySelector('#fileUpload').addEventListener('change', event => {
+  handleImageUpload(event)
+})
+/*end sending image*/
 
 //button-change class
-function updateClass(ele){
-  const element =ele;
+function updateClass(ele) {
+  const element = ele;
   var divs = document.querySelectorAll("[ispressed]");
-  for(var i =0; i<divs.length;i++){
-    if(divs[i]!==ele && divs[i].getAttribute('ispressed')==='true' ){
-      divs[i].setAttribute('ispressed',false);
-      divs[i].classList='';
+  for (var i = 0; i < divs.length; i++) {
+    if (divs[i] !== ele && divs[i].getAttribute('ispressed') === 'true') {
+      divs[i].setAttribute('ispressed', false);
+      divs[i].classList = '';
     }
   }
   console.log(element.getAttribute('ispressed'));
-  if(element.getAttribute('ispressed')==='false'){
-     element.setAttribute('ispressed',true);
+  if (element.getAttribute('ispressed') === 'false') {
+    element.setAttribute('ispressed', true);
     element.classList.add('example-1');
-    markerType=element.getAttribute('type');
-  }else{
-    element.setAttribute('ispressed',false);
-    element.classList='';
-    markerType=null;
+    markerType = element.getAttribute('type');
+  } else {
+    element.setAttribute('ispressed', false);
+    element.classList = '';
+    markerType = null;
   }
 }
 // Bottom-right button press event
@@ -113,10 +111,10 @@ function addPin() {
   pinInPlacement = !pinInPlacement;
 
   const pinButton = document.getElementById('add-pin-button');
-  if(pinInPlacement==true){
-  pinButton.classList.add('add-pin-button--active');
-  }else{
-    pinButton.classList='mdc-fab';
+  if (pinInPlacement == true) {
+    pinButton.classList.add('add-pin-button--active');
+  } else {
+    pinButton.classList = 'mdc-fab';
   }
 }
 
@@ -127,25 +125,29 @@ if (!dialog.showModal) {
 }
 
 // Dialog save
-dialog.querySelector('#dialog-rate_save').addEventListener('click', function() {
-  if(markerType==null){
+dialog.querySelector('#dialog-rate_save').addEventListener('click', function () {
+  if (markerType == null) {
     alert("please choose a Type to continue!");
     return;
   }
   dialog.close();
 
   if (currentPinCoords) {
-    if(markerType=="bench"){
-      L.marker(currentPinCoords, {icon: benchIcon}).addTo(map);
-    }else if(markerType=="toilet"){
-     L.marker(currentPinCoords, {icon: toiletIcon}).addTo(map);
-    }else{ // workout
-      L.marker(currentPinCoords, {icon: workoutIcon}).addTo(map);
-    }
     const type = markerType;
     const description = document.querySelector('#description').value;
     const id = getRandomId();
     const data = { type, description, coords: currentPinCoords };
+
+    if (markerType == "bench") {
+      L.marker(currentPinCoords, { icon: benchIcon }).addTo(map).on('dblclick', onDoubleClick)
+        .bindPopup(description);
+    } else if (markerType == "toilet") {
+      L.marker(currentPinCoords, { icon: toiletIcon }).addTo(map).on('dblclick', onDoubleClick)
+        .bindPopup(description);
+    } else { // workout
+      L.marker(currentPinCoords, { icon: workoutIcon }).addTo(map).on('dblclick', onDoubleClick)
+        .bindPopup(description);
+    }
 
     fetch(`/add_point?id=${id}&data=${JSON.stringify(data)}`, {
       method: 'GET'
@@ -157,22 +159,22 @@ dialog.querySelector('#dialog-rate_save').addEventListener('click', function() {
 });
 
 // Dialog close (without saving)
-dialog.querySelector('.close').addEventListener('click', function() {
+dialog.querySelector('.close').addEventListener('click', function () {
   dialog.close();
   deactivateAddPinButton();
   clearPressedType();
 });
 
 //cleans pressed button and markerType=null
-function clearPressedType(){
-    var divs = document.querySelectorAll("[ispressed]");
-    for(var i =0; i<divs.length;i++){
-      if(divs[i].getAttribute('ispressed')==='true' ){
-        divs[i].setAttribute('ispressed',false);
-        divs[i].classList='';
-      }
+function clearPressedType() {
+  var divs = document.querySelectorAll("[ispressed]");
+  for (var i = 0; i < divs.length; i++) {
+    if (divs[i].getAttribute('ispressed') === 'true') {
+      divs[i].setAttribute('ispressed', false);
+      divs[i].classList = '';
+    }
   }
-  markerType=null;
+  markerType = null;
 }
 
 // add icon to map
@@ -183,7 +185,7 @@ function deactivateAddPinButton() {
   const pinButton = document.getElementById('add-pin-button');
   pinButton.classList.remove('a-pin-button--active');
 }
-/*aubaida adds*/ 
+/*aubaida adds*/
 /*
 let locatedFlag= 0;
 let pointLocation = null;
@@ -212,52 +214,49 @@ function showPosition(position) {
 getLocation();
 setInterval(getLocation, 3000);
 */
-let locatedFlag= 0;
+let locatedFlag = 0;
 let radiusLocation = null;
 let pointLocation = null;
-	function onLocationFound(e) {
-    if(locatedFlag==1){
-      map.removeLayer(pointLocation);
-    //  map.removeLayer(radiusLocation);
-    }
-		var radius = e.accuracy / 2;
-    pointLocation =new L.marker(e.latlng);
-       pointLocation.addTo(map) 
-        .on('dblclick', onDoubleClick)
-        .bindPopup("You are here!")
-        .openPopup();
- //   radiusLocation = new L.circle(e.latlng, radius);
-  //  radiusLocation.addTo(map);
-    if(locatedFlag==0){
-      stopLocation();
-      locatedFlag = 1;
-    }	
-	}
 
-	function onLocationError(e) {
-		alert(e.message);
-	}
+function onLocationFound(e) {
+  if (locatedFlag == 1) {
+    map.removeLayer(pointLocation);
+  }
+  var radius = e.accuracy / 2;
+  pointLocation = new L.marker(e.latlng);
+  pointLocation.addTo(map)
+    .on('dblclick', onDoubleClick)
+    .bindPopup("You are here!")
+  if (locatedFlag == 0) {
+     stopLocation();
+    locatedFlag = 1;
+  }
+}
 
-	map.on('locationfound', onLocationFound);
-	map.on('locationerror', onLocationError);
+function onLocationError(e) {
+  alert(e.message);
+}
 
- 
-   function locate() {
-      //map.locate({setView: false});
-      map.locate({setView: true, maxZoom: 16 , watch: true, enableHighAccuracy: true });
-    }
-  //map.locate({setView: true, maxZoom: 16 , watch: false, enableHighAccuracy: true , maximumAge: 5000 , timeout: 10000});
-  map.locate({setView: true, maxZoom: 16});
- function stopLocation(){
+map.on('locationfound', onLocationFound);
+map.on('locationerror', onLocationError);
+
+//first location
+map.locate({ setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true });
+
+
+function locate() {
+  map.locate({ setView: false, maxZoom: 16, watch: true, enableHighAccuracy: true });
+}
+
+function stopLocation() {
   map.stopLocate();
   locate();
- // setInterval(locate, 3000);
- }
+}
 
- function onDoubleClick(e) {
-    alert(this.getLatLng());
-  }
-/*aubaida end adding*/ 
+function onDoubleClick(e) {
+  alert(this.getLatLng());
+}
+/*aubaida end adding*/
 
 // load map:
 fetch('/all_points', { method: 'GET' })
@@ -267,17 +266,20 @@ fetch('/all_points', { method: 'GET' })
       id => {
         const pointData = JSON.parse(data[id]);
         var pointType = pointData.type;
-        if(pointType=="bench"){
-          L.marker(pointData.coords, {icon: benchIcon}).addTo(map);
-        }else if(pointType=="toilet"){
-          L.marker(pointData.coords, {icon: toiletIcon}).addTo(map);
-        }else{ // workout
-          L.marker(pointData.coords, {icon: workoutIcon}).addTo(map);
+        if (pointType == "bench") {
+          L.marker(pointData.coords, { icon: benchIcon }).addTo(map).on('dblclick', onDoubleClick)
+            .bindPopup(pointData.description);
+        } else if (pointType == "toilet") {
+          L.marker(pointData.coords, { icon: toiletIcon }).addTo(map).on('dblclick', onDoubleClick)
+            .bindPopup(pointData.description);
+        } else { // workout
+          L.marker(pointData.coords, { icon: workoutIcon }).addTo(map).on('dblclick', onDoubleClick)
+            .bindPopup(pointData.description);
         }
       }
     );
   }
-);
+  );
 
 
 // Utils
