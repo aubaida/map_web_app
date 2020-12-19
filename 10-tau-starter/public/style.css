@@ -18,6 +18,22 @@ html, body {
   background-color: rgb(141, 191, 204);
 }
 
+.imgEdit img{
+  position:relative;
+   width: 25px;
+  height: 25px;
+  left:-2px;
+  top:2px;
+}
+#navigate-button{
+   position: absolute;
+  bottom: 75px;
+  right: 10px;
+  z-index: 1000;
+}
+.navigate-button--active {
+  background-color: rgb(141, 191, 204);
+}
 .dialog {
   z-index: 1000;
   position: absolute;

@@ -1,26 +1,20 @@
 const map = L.map('map').fitWorld();
 
-if (true) {
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '<a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
-  map.setZoom(12);
-  map.panTo(new L.LatLng(32.070953, 34.763514));
-} else {
-  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-    maxZoom: 18,
-    attribution: '<a href="https://www.mapbox.com/">Mapbox</a>',
-    id: 'mapbox/streets-v11',
-    tileSize: 512,
-    zoomOffset: -1
-  }).addTo(map);
-}
+//add map
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+maxZoom: 19,
+attribution: '<a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+map.setZoom(12);
+map.panTo(new L.LatLng(32.070953, 34.763514));
+
 
 // When set to true, the next map click will trigger dialog open for pin placement:
 let pinInPlacement = false;
 // Current pin coordinates, set by pressing the map
 let currentPinCoords = null;
+// when set to true navigate button is pressed and the view set to the your location
+let isNavigate = false;
 
 // Map press event
 map.on('mousedown touchstart', function onMouseDown(event) {
@@ -151,7 +145,7 @@ dialog.querySelector('#dialog-rate_save').addEventListener('click', function () 
 
     fetch(`/add_point?id=${id}&data=${JSON.stringify(data)}`, {
       method: 'GET'
-    });
+    });fetch
     clearPressedType();
   }
 
@@ -186,34 +180,7 @@ function deactivateAddPinButton() {
   pinButton.classList.remove('a-pin-button--active');
 }
 /*aubaida adds*/
-/*
-let locatedFlag= 0;
-let pointLocation = null;
-function getLocation() {
-  console.log("111111");
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
-  } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-}
 
-function showPosition(position) {
-  if(locatedFlag==1){
-    map.removeLayer(pointLocation);
-    console.log("removed");
-  }
-    pointLocation=new L.marker([position.coords.latitude, position.coords.longitude]);
-     pointLocation.addTo(map)
-     .on('dblclick', onDoubleClick)
-        .bindPopup("you are here"); 
-    if(locatedFlag==0){
-    locatedFlag= 1;
-  }
-}
-getLocation();
-setInterval(getLocation, 3000);
-*/
 let locatedFlag = 0;
 let radiusLocation = null;
 let pointLocation = null;
@@ -244,13 +211,12 @@ map.on('locationerror', onLocationError);
 map.locate({ setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true });
 
 
-function locate() {
-  map.locate({ setView: false, maxZoom: 16, watch: true, enableHighAccuracy: true });
+function locate(setView) {
+  map.locate({ setView: setView, maxZoom: 16, watch: true, enableHighAccuracy: true });
 }
-
 function stopLocation() {
   map.stopLocate();
-  locate();
+  locate(false);
 }
 
 function onDoubleClick(e) {
@@ -281,7 +247,19 @@ fetch('/all_points', { method: 'GET' })
   }
   );
 
+//navigate button 
+function navigatetionMode(){
+  isNavigate = !isNavigate;
 
+  const navigateButton = document.getElementById('navigate-button');
+  map.stopLocate();
+  locate(isNavigate);
+  if (isNavigate == true) {
+    navigateButton.classList.add('navigate-button--active');
+  } else {
+    navigateButton.classList = 'mdc-fab';
+  }
+}
 // Utils
 function getRandomId() {
   return Math.random().toString().substr(2, 9);
