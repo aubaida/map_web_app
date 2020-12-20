@@ -16,9 +16,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="style.css"/>
 </head>
+<img src="" alt="stam">
 <body>
   <div id='map'></div>
- <button id="navigate-button" onclick="navigatetionMode()" class="mdc-fab" aria-label="Favorite">
+  <button id="navigate-button" onclick="navigatetionMode()" class="mdc-fab" aria-label="Favorite">
     <div class="mdc-fab__ripple"></div>
     <span class="imgEdit"><img src="icons/navigate-icon.png"></span>
   </button>
@@ -26,24 +27,40 @@
     <div class="mdc-fab__ripple"></div>
     <span class="mdc-fab__icon material-icons">add</span>
   </button>
-  <dialog class="mdl-dialog">
+  <button id="choose-filter-button" onclick="showFilterOptions()" class="mdc-fab" aria-label="Favorite">
+    <div class="mdc-fab__ripple"></div>
+    <span class="mdc-fab__icon material-icons">choose</span>
+  </button>
+  <dialog id="add-pin-dialog" class="mdl-dialog">
       <h4 class="mdl-dialog__title">New marker</h4>
       <div class="mdl-dialog__content">
         <pio class="">Type :</pio>
         <br>
         <br>
-        <button id="close-image" style="margin-left:1em" type="bench" ispressed=false class="" onclick="updateClass(this)"><img src="icons/bench.png"></button>
-        <button id="close-image" style="margin-left:1em"  type="toilet" ispressed=false class="" onclick="updateClass(this)"><img src="icons/toilet.png"></button>
-        <button id="close-image" style="margin-left:1em" type="workout" ispressed=false class="" onclick="updateClass(this)"><img src="icons/workout.png"></button>
+        <button id="close-image" style="margin-left:1em" type="bench" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/bench.png"></button>
+        <button id="close-image" style="margin-left:1em"  type="toilet" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/toilet.png"></button>
+        <button id="close-image" style="margin-left:1em" type="workout" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/workout.png"></button>
         <div class = "mdl-textfield mdl-js-textfield">
           <input class="mdl-textfield__input" type="text" id="description">
           <label class="mdl-textfield__label" for="description">Description</label>
         </div>
-        <input type="file" id="fileUpload" />
+        <input id="inputFileToLoad" type="file" accept="image/*;capture=camera" onchange="encodeImageFileAsURL();">
       </div>
       <div class="mdl-dialog__actions">
-        <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored mdl-shadow--2dp" id="dialog-rate_save">Save</button>
-        <button type="button" class="mdl-button close">Close</button>
+        <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored mdl-shadow--2dp" id="dialog-rate_save" onclick="save()">Save</button>
+        <button type="button" class="mdl-button close" onclick="closeDialog()">Close</button>
+      </div>
+  </dialog>
+  <dialog id="filter-dialog" class="mdl-dialog">
+      <h4 class="mdl-dialog__title">Filter options</h4>
+      <div class="mdl-dialog__content">
+        <button id="close-image" style="margin-left:1em" type="bench" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/bench.png"></button>
+        <button id="close-image" style="margin-left:1em"  type="toilet" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/toilet.png"></button>
+        <button id="close-image" style="margin-left:1em" type="workout" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/workout.png"></button>
+      </div>
+      <div class="mdl-dialog__actions">
+        <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored mdl-shadow--2dp" id="dialog-rate_ok" onclick="showChosenFilters()">ok</button>
+        <button type="button" class="mdl-button close" onclick="closeDialog()">Close</button>
       </div>
   </dialog>
   <script src="app.js"></script>

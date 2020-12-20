@@ -1,23 +1,25 @@
 const map = L.map('map').fitWorld();
 
-//add map
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-maxZoom: 19,
-attribution: '<a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
-map.setZoom(12);
-map.panTo(new L.LatLng(32.070953, 34.763514));
 
-
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '<a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  map.setZoom(12);
+  map.panTo(new L.LatLng(32.070953, 34.763514));
+  
+  
 // When set to true, the next map click will trigger dialog open for pin placement:
 let pinInPlacement = false;
 // Current pin coordinates, set by pressing the map
 let currentPinCoords = null;
+let markers =[];
 // when set to true navigate button is pressed and the view set to the your location
 let isNavigate = false;
 
 // Map press event
 map.on('mousedown touchstart', function onMouseDown(event) {
+  registerDialog(true);
   if (pinInPlacement) {
     currentPinCoords = event.latlng;
     pinInPlacement = false;
@@ -54,40 +56,46 @@ var workoutIcon = L.icon({
 
 
 /*END ICONS CONFIG*/
+var currImg="";
 
-/*sending image*/
-const handleImageUpload = event => {
-  const files = event.target.files
-  const formData = new FormData()
-  formData.append('myFile', files[0])
+//try to load image 
 
-  fetch('/add_img', {
-    method: 'POST',
-    body: formData
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data.path)
-    })
-    .catch(error => {
-      console.error(error)
-    })
-}
+ function encodeImageFileAsURL() {
 
-document.querySelector('#fileUpload').addEventListener('change', event => {
-  handleImageUpload(event)
-})
+    var filesSelected = document.getElementById("inputFileToLoad").files;
+    if (filesSelected.length > 0) {
+      var fileToLoad = filesSelected[0];
+
+      var fileReader = new FileReader();
+
+      fileReader.onload = function(fileLoadedEvent) {
+        var srcData = fileLoadedEvent.target.result; // <--- data: base64
+        currImg= srcData;
+        console.log(srcData);
+       /* var newImage = document.createElement('img');
+        newImage.src = srcData;
+
+        document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+        alert("Converted Base64 version is " + document.getElementById("imgTest").innerHTML);
+        console.log("Converted Base64 version is " + document.getElementById("imgTest").innerHTML);*/
+      }
+      fileReader.readAsDataURL(fileToLoad);
+    }
+  }
 /*end sending image*/
 
 //button-change class
-function updateClass(ele) {
+function updateClass(ele,multiple) {
+  
   const element = ele;
-  var divs = document.querySelectorAll("[ispressed]");
-  for (var i = 0; i < divs.length; i++) {
-    if (divs[i] !== ele && divs[i].getAttribute('ispressed') === 'true') {
-      divs[i].setAttribute('ispressed', false);
-      divs[i].classList = '';
+  if(!multiple){
+    var divs = document.querySelectorAll("[ispressed]");
+    for (var i = 0; i < divs.length; i++) {
+       if (divs[i] !== ele && divs[i].getAttribute('ispressed') === 'true') {
+        divs[i].setAttribute('ispressed', false);
+        divs[i].classList = '';
     }
+  }
   }
   console.log(element.getAttribute('ispressed'));
   if (element.getAttribute('ispressed') === 'false') {
@@ -99,6 +107,54 @@ function updateClass(ele) {
     element.classList = '';
     markerType = null;
   }
+}
+
+function clearPointsFromMap(){
+  console.log(markers);
+  markers.forEach(function(m){
+    map.removeLayer(m);
+  });
+  markers=[];
+};
+
+function showChosenFilters(){
+  clearPointsFromMap();
+  var divs = document.querySelectorAll("[ispressed]");
+  
+  var filterItems = [];
+    for (var i = 0; i < divs.length; i++) {
+      if (divs[i].getAttribute('ispressed') === 'true'){
+        filterItems.push(divs[i].getAttribute('type'));
+      }
+    }
+    console.log(filterItems);
+        fetch('/all_points', { method: 'GET' })
+        .then(result => result.json())
+        .then(data => {
+        Object.keys(data).forEach(
+        id => {
+        const pointData = JSON.parse(data[id]);
+        var pointType = pointData.type;
+        var marker;
+        if(filterItems.includes(pointType)){
+        if (pointType == "bench") {
+         marker = new L.marker(pointData.coords, { icon: benchIcon }).addTo(map).on('dblclick', onDoubleClick)
+            .bindPopup(pointData.description);
+        } else if (pointType == "toilet") {
+         marker = new L.marker(pointData.coords, { icon: toiletIcon }).addTo(map).on('dblclick', onDoubleClick)
+            .bindPopup(pointData.description);
+        } else if(pointType == "workout") { // workout
+         marker = new L.marker(pointData.coords, { icon: workoutIcon }).addTo(map).on('dblclick', onDoubleClick)
+            .bindPopup(pointData.description);
+        }
+        markers.push(marker);
+        }
+      }
+    );
+  }
+);
+    
+  dialog.close();
 }
 // Bottom-right button press event
 function addPin() {
@@ -112,14 +168,40 @@ function addPin() {
   }
 }
 
-// Register dialog
-const dialog = document.querySelector('dialog');
-if (!dialog.showModal) {
-  dialogPolyfill.registerDialog(dialog);
+function showFilterOptions(){
+    registerDialog(false);
+    dialog.showModal();
+    const filterButton = document.getElementById('choose-filter-button');
+    filterButton.classList = 'mdc-fab';
+  
 }
 
+
+//register dialog
+var dialog;
+function registerDialog(pinDialog){
+var dialogs = document.querySelectorAll('dialog');
+for (var i = 0; i < dialogs.length; i++) {
+  if(pinDialog && dialogs[i].id==="add-pin-dialog"){
+    dialog=dialogs[i];
+    if (!dialog.showModal) {
+      dialogPolyfill.registerDialog(dialog);
+      }
+  }else if (!pinDialog  && dialogs[i].id==="filter-dialog"){
+    dialog=dialogs[i];
+    if (!dialog.showModal) {
+      dialogPolyfill.registerDialog(dialog);
+    }
+  }
+}
+}
+
+
+
+
+
 // Dialog save
-dialog.querySelector('#dialog-rate_save').addEventListener('click', function () {
+function save(){
   if (markerType == null) {
     alert("please choose a Type to continue!");
     return;
@@ -130,34 +212,40 @@ dialog.querySelector('#dialog-rate_save').addEventListener('click', function () 
     const type = markerType;
     const description = document.querySelector('#description').value;
     const id = getRandomId();
-    const data = { type, description, coords: currentPinCoords };
-
+    const img = currImg;
+    const data = { type, description, coords: currentPinCoords , img:img.toString('base64') };
+    console.log(data);
+    var marker;
     if (markerType == "bench") {
-      L.marker(currentPinCoords, { icon: benchIcon }).addTo(map).on('dblclick', onDoubleClick)
+      marker = new L.marker(currentPinCoords, { icon: benchIcon }).addTo(map).on('dblclick', viewPhoto)
         .bindPopup(description);
     } else if (markerType == "toilet") {
-      L.marker(currentPinCoords, { icon: toiletIcon }).addTo(map).on('dblclick', onDoubleClick)
+      marker = new L.marker(currentPinCoords, { icon: toiletIcon }).addTo(map).on('dblclick', viewPhoto)
         .bindPopup(description);
     } else { // workout
-      L.marker(currentPinCoords, { icon: workoutIcon }).addTo(map).on('dblclick', onDoubleClick)
+     marker = new L.marker(currentPinCoords, { icon: workoutIcon }).addTo(map).on('dblclick', viewPhoto)
         .bindPopup(description);
     }
-
+    markers.push(marker);
+    var imgLength=document.getElementsByClassName("leaflet-marker-icon leaflet-zoom-animated leaflet-interactive").length;
+     var element= document.getElementsByClassName("leaflet-marker-icon leaflet-zoom-animated leaflet-interactive")[imgLength-1];
+     element.setAttribute("id",id);
     fetch(`/add_point?id=${id}&data=${JSON.stringify(data)}`, {
-      method: 'GET'
+      method: 'GET',mode:'no-cors' //start here
     });fetch
     clearPressedType();
   }
 
   deactivateAddPinButton();
-});
+};
 
 // Dialog close (without saving)
-dialog.querySelector('.close').addEventListener('click', function () {
-  dialog.close();
-  deactivateAddPinButton();
+function closeDialog(){
+  dialog.removeAttribute('open');
+  if(dialog.id=='add-pin-dialog')
+    deactivateAddPinButton();
   clearPressedType();
-});
+}
 
 //cleans pressed button and markerType=null
 function clearPressedType() {
@@ -169,6 +257,9 @@ function clearPressedType() {
     }
   }
   markerType = null;
+  currImg="";
+  var uploadedFileName = document.querySelector('#inputFileToLoad');
+  uploadedFileName.value = '';
 }
 
 // add icon to map
@@ -189,7 +280,6 @@ function onLocationFound(e) {
   if (locatedFlag == 1) {
     map.removeLayer(pointLocation);
   }
-  var radius = e.accuracy / 2;
   pointLocation = new L.marker(e.latlng);
   pointLocation.addTo(map)
     .on('dblclick', onDoubleClick)
@@ -211,12 +301,13 @@ map.on('locationerror', onLocationError);
 map.locate({ setView: true, maxZoom: 16, watch: true, enableHighAccuracy: true });
 
 
-function locate(setView) {
-  map.locate({ setView: setView, maxZoom: 16, watch: true, enableHighAccuracy: true });
+function locate(setView,maxZoom) {
+  map.locate({ setView: setView, maxZoom: maxZoom, watch: true, enableHighAccuracy: true });
 }
+
 function stopLocation() {
   map.stopLocate();
-  locate(false);
+  locate(false,16);
 }
 
 function onDoubleClick(e) {
@@ -230,22 +321,32 @@ fetch('/all_points', { method: 'GET' })
   .then(data => {
     Object.keys(data).forEach(
       id => {
-        const pointData = JSON.parse(data[id]);
+        var res= data[id];
+         if(!(res[res.length -1]=='}')){
+          res=res.concat('"}');
+        }
+        const pointData = JSON.parse(res);
         var pointType = pointData.type;
+        var marker;
         if (pointType == "bench") {
-          L.marker(pointData.coords, { icon: benchIcon }).addTo(map).on('dblclick', onDoubleClick)
+          marker = new L.marker(pointData.coords, { icon: benchIcon }).addTo(map).on('dblclick', viewPhoto)
             .bindPopup(pointData.description);
         } else if (pointType == "toilet") {
-          L.marker(pointData.coords, { icon: toiletIcon }).addTo(map).on('dblclick', onDoubleClick)
+           marker = new L.marker(pointData.coords, { icon: toiletIcon }).addTo(map).on('dblclick', viewPhoto)
             .bindPopup(pointData.description);
         } else { // workout
-          L.marker(pointData.coords, { icon: workoutIcon }).addTo(map).on('dblclick', onDoubleClick)
+           marker = new L.marker(pointData.coords, { icon: workoutIcon }).addTo(map).on('dblclick', viewPhoto)
             .bindPopup(pointData.description);
         }
+        markers.push(marker);
+        //adding the id
+         var imgLength=document.getElementsByClassName("leaflet-marker-icon leaflet-zoom-animated leaflet-interactive").length;
+         var element= document.getElementsByClassName("leaflet-marker-icon leaflet-zoom-animated leaflet-interactive")[imgLength-1];
+         element.setAttribute("id",id);
       }
     );
   }
-  );
+);
 
 //navigate button 
 function navigatetionMode(){
@@ -253,14 +354,45 @@ function navigatetionMode(){
 
   const navigateButton = document.getElementById('navigate-button');
   map.stopLocate();
-  locate(isNavigate);
-  if (isNavigate == true) {
+  console.log(isNavigate);
+  if (isNavigate == true) { 
+    console.log(20);
+    map.setZoom(20);
+    locate(true,20);
     navigateButton.classList.add('navigate-button--active');
   } else {
+    console.log(16);
+    map.setZoom(16);
+    locate(false,16);
     navigateButton.classList = 'mdc-fab';
   }
-}
+};
 // Utils
 function getRandomId() {
   return Math.random().toString().substr(2, 9);
+};
+
+function viewPhoto(e) {
+  fetch('/all_points', { method: 'GET' })
+  .then(result => result.json())
+  .then(data => {
+    Object.keys(data).forEach(
+      id => {
+        var pressElem=e.target;
+        var myId=pressElem._icon.getAttribute("id")
+        if(id==myId){
+          var res= data[id];
+         if(!(res[res.length -1]=='}')){
+          res=res.concat('"}');
+        }
+        const pointData = JSON.parse(res);
+        var myImg=pointData.img;
+        myImg=myImg.replace(/\s/g,'+');
+        var ele=document.querySelectorAll('[alt="stam"]')[0];
+        ele.setAttribute("src",myImg); 
+        }
+      }
+    );
+  }
+  );
 };

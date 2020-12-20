@@ -13,7 +13,6 @@ html, body {
   right: 10px;
   z-index: 1000;
 }
-
 .add-pin-button--active {
   background-color: rgb(141, 191, 204);
 }
@@ -27,13 +26,21 @@ html, body {
 }
 #navigate-button{
    position: absolute;
-  bottom: 75px;
+  bottom: 140px;
   right: 10px;
   z-index: 1000;
 }
 .navigate-button--active {
   background-color: rgb(141, 191, 204);
 }
+#choose-filter-button {
+  position: absolute;
+  bottom: 75px;
+  right: 10px;
+  z-index: 1000;
+}
+
+
 .dialog {
   z-index: 1000;
   position: absolute;
