@@ -16,12 +16,11 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="style.css"/>
 </head>
-<img src="" alt="stam">
 <body>
   <div id='map'></div>
   <button id="navigate-button" onclick="navigatetionMode()" class="mdc-fab" aria-label="Favorite">
     <div class="mdc-fab__ripple"></div>
-    <span class="imgEdit"><img src="icons/navigate-icon.png"></span>
+    <span class="imgEdit"><img src="icons/navigate-icon-1.png"></span>
   </button>
   <button id="add-pin-button" onclick="addPin()" class="mdc-fab" aria-label="Favorite">
     <div class="mdc-fab__ripple"></div>
@@ -29,7 +28,7 @@
   </button>
   <button id="choose-filter-button" onclick="showFilterOptions()" class="mdc-fab" aria-label="Favorite">
     <div class="mdc-fab__ripple"></div>
-    <span class="mdc-fab__icon material-icons">choose</span>
+    <span class="imgEdit2"><img src="icons/filter-icon-1.png"></span>
   </button>
   <dialog id="add-pin-dialog" class="mdl-dialog">
       <h4 class="mdl-dialog__title">New marker</h4>
@@ -40,11 +39,21 @@
         <button id="close-image" style="margin-left:1em" type="bench" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/bench.png"></button>
         <button id="close-image" style="margin-left:1em"  type="toilet" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/toilet.png"></button>
         <button id="close-image" style="margin-left:1em" type="workout" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/workout.png"></button>
+        <br></br>
+        <button id="close-image" style="margin-left:1em" type="byke-path" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/byke.png"></button>
+        <button id="close-image" style="margin-left:1em"  type="broken-road" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/broken-road.png"></button>
+        <button id="close-image" style="margin-left:1em" type="crowded" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/crowd.png"></button>
+        <br></br>
+        <button id="close-image" style="margin-left:1em" type="park" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/park.png"></button>
+        <button id="close-image" style="margin-left:1em"  type="stairs" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/stairs.png"></button>
+        <button id="close-image" style="margin-left:1em" type="view" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/photography.png"></button>
+        <br></br>
+        <button id="close-image" style="margin-left:1em" type="watter" ispressed=false class="" onclick="updateClass(this,false)"><img src="icons/watter.png"></button>
         <div class = "mdl-textfield mdl-js-textfield">
           <input class="mdl-textfield__input" type="text" id="description">
           <label class="mdl-textfield__label" for="description">Description</label>
         </div>
-        <input id="inputFileToLoad" type="file" accept="image/*;capture=camera" onchange="encodeImageFileAsURL();">
+        
       </div>
       <div class="mdl-dialog__actions">
         <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored mdl-shadow--2dp" id="dialog-rate_save" onclick="save()">Save</button>
@@ -57,10 +66,78 @@
         <button id="close-image" style="margin-left:1em" type="bench" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/bench.png"></button>
         <button id="close-image" style="margin-left:1em"  type="toilet" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/toilet.png"></button>
         <button id="close-image" style="margin-left:1em" type="workout" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/workout.png"></button>
+        <br></br>
+        <button id="close-image" style="margin-left:1em" type="byke-path" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/byke.png"></button>
+        <button id="close-image" style="margin-left:1em"  type="broken-road" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/broken-road.png"></button>
+        <button id="close-image" style="margin-left:1em" type="crowded" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/crowd.png"></button>
+        <br></br>
+        <button id="close-image" style="margin-left:1em" type="park" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/park.png"></button>
+        <button id="close-image" style="margin-left:1em"  type="stairs" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/stairs.png"></button>
+        <button id="close-image" style="margin-left:1em" type="view" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/photography.png"></button>
+        <br></br>
+        <button id="close-image" style="margin-left:1em" type="watter" ispressed=false class="" onclick="updateClass(this,true)"><img src="icons/watter.png"></button>
       </div>
       <div class="mdl-dialog__actions">
         <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored mdl-shadow--2dp" id="dialog-rate_ok" onclick="showChosenFilters()">ok</button>
+        <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored mdl-shadow--2dp" id="dialog-rate_selectAll" onclick="selectAll()">All</button>
         <button type="button" class="mdl-button close" onclick="closeDialog()">Close</button>
+      </div>
+  </dialog>
+  <dialog id="description-dialog" class="mdl-dialog">
+      <h4 class="mdl-dialog__title"></h4>
+      <div class="mdl-dialog__content">
+        <span class="imgEdit3"><img src="" alt="no photo" id="description-image"></span>
+        <br></br>
+        <pio id="description-text">benchkhgsfddjhfghhhgghghghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh</pio>
+        <br></br>
+        <span id="like-button" class="likebtn-wrapper lb-loaded lb-style-white lb-popup-position-top lb-popup-style-light" data-white_label="true" data-counter_type="percent" data-popup_disabled="true">
+          <span class="lb-like" id="lb-like-0">
+            <span onclick="like();" class="lb-a" data-lb_index="0">
+              <i class="lb-tt lb-tooltip-tt">
+                <i class="lb-tt-lt"></i>
+                <i class="lb-tt-rt"></i>
+                <i class="lb-tt-m">I like this</i>
+                <i class="lb-tt-m2"></i>
+                <i class="lb-tt-lb"></i>
+                <i class="lb-tt-rb"></i>
+                <i class="lb-tt-a"></i>
+              </i>
+              <span class="likebtn-icon lb-like-icon">&nbsp;</span>
+              <span class="likebtn-label lb-like-label">Like</span>
+            </span>
+            <span id="like-count" class="lb-count" data-count="1" style="display: inline-block;">100%</span>
+            </span>
+            <span class="lb-dislike " id="lb-dislike-0">
+              <span onclick="dislike();" class="lb-a" data-lb_index="0">
+                <i class="lb-tt lb-tooltip-tt">
+                  <i class="lb-tt-lt"></i>
+                  <i class="lb-tt-rt"></i>
+                  <i class="lb-tt-mu">I dislike this</i>
+                  <i class="lb-tt-m2"></i>
+                  <i class="lb-tt-lb"></i>
+                  <i class="lb-tt-rb"></i>
+                  <i class="lb-tt-a"></i>
+                </i>
+                <span class="likebtn-icon lb-dislike-icon">&nbsp;</span>
+              </span>
+              <span id="dislike-count" class="lb-count" data-count="0" style="display: inline-block;">0%</span>
+            </span>
+          </span>
+        <script>
+        (function(d,e,s){
+          if(d.getElementById("likebtn_wjs"))
+          return;
+          a=d.createElement(e);
+          m=d.getElementsByTagName(e)[0];
+          a.async=1;
+          a.id="likebtn_wjs";
+          a.src=s;
+          m.parentNode.insertBefore(a, m)})
+          (document,"script","//w.likebtn.com/js/w/widget.js");
+        </script>
+      </div>
+      <div class="mdl-dialog__actions">
+         <button type="button" class="mdl-button close" onclick="closeDialog()">Close</button>
       </div>
   </dialog>
   <script src="app.js"></script>

@@ -19,17 +19,33 @@ html, body {
 
 .imgEdit img{
   position:relative;
-   width: 25px;
+  width: 30px;
+  height: 30px;
+  left:0px;
+  top:0px;
+}
+
+.imgEdit2 img{
+  position:relative;
+  width: 25px;
   height: 25px;
-  left:-2px;
+  left:0px;
   top:2px;
 }
+.imgEdit3 img{
+  width: 200px;
+  height: 200px;
+  left:18px;
+  top:-20px;
+}
+
 #navigate-button{
-   position: absolute;
+  position: absolute;
   bottom: 140px;
   right: 10px;
   z-index: 1000;
 }
+
 .navigate-button--active {
   background-color: rgb(141, 191, 204);
 }
@@ -37,6 +53,18 @@ html, body {
   position: absolute;
   bottom: 75px;
   right: 10px;
+  z-index: 1000;
+}
+#like-button {
+  position: absolute;
+  bottom: 75px;
+  right: 10px;
+  z-index: 1000;
+}
+#dislike-button {
+  position: absolute;
+  bottom: 75px;
+  right: 60px;
   z-index: 1000;
 }
 
@@ -79,3 +107,38 @@ pio{
   outline-offset: 2px;
 }
 
+//stam
+.social-like, .social-dislike {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    /*width: 48%;*/
+    background-color: #03A9F4;
+    color: #fff;
+}
+
+.social-like {
+    border-top-left-radius: 5px;
+}
+
+.social-dislike {
+    border-top-right-radius: 5px;
+}
+
+.count, .like, .dislike {
+    padding:10px;
+}
+
+.count, .dislike {
+    background-color: #03A9F4;
+    border-radius: 50%;
+    font-size:12px;
+}
+
+.dislike {
+    margin-left: -13px;
+}
+
+.count {
+    margin-right: -10px;
+}
