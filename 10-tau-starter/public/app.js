@@ -17,12 +17,16 @@ let markers =[];
 // when set to true navigate button is pressed and the view set to the your location
 let isNavigate = false;
 
+var typeEle = document.getElementsByTagName('pio')[0];
+var typeText = "Type :";
 // Map press event
 map.on('mousedown touchstart', function onMouseDown(event) {
   registerDialog("add-pin-dialog");
   if (pinInPlacement) {
     currentPinCoords = event.latlng;
     pinInPlacement = false;
+    //changing the type to default
+    typeEle.textContent = typeText;
     dialog.showModal();
     const pinButton = document.getElementById('add-pin-button');
     pinButton.classList = 'mdc-fab';
@@ -150,6 +154,9 @@ function updateClass(ele,multiple) {
     element.setAttribute('ispressed', true);
     element.classList.add('example-1');
     markerType = element.getAttribute('type');
+    if(element.getAttribute('desc') != null){
+      typeEle.textContent = element.getAttribute('desc');
+    }
   } else {
     element.setAttribute('ispressed', false);
     element.classList = '';
@@ -253,6 +260,7 @@ function save(){
     alert("please choose a Type to continue!");
     return;
   }
+
   dialog.close();
 
   if (currentPinCoords) {
